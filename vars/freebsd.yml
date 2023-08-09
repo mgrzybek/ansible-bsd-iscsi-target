@@ -1,0 +1,3 @@
+sysctl_values:
+- name: vfs.zfs.vol.mode
+  value: 2

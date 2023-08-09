@@ -1,0 +1,17 @@
+---
+
+- name: restart ctld
+  service:
+    name: ctld
+    state: restarted
+    enabled: true
+
+- name: set live sysctl
+  with_items: "{{ sysctl_values }}"
+  command: sysctl {{ item.name }} {{ item.value }}
+
+- name: reload consul
+  command: consul reload
+
+- name: restart telegraf
+  service: name=telegraf state=restarted

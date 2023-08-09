@@ -85,3 +85,15 @@ N.A.
   roles:
   - role: ansible-bsd-iscsi-target
 ```
+
+## Testing
+
+Not implemented yet.
+
+## License
+
+GPL-3+
+
+## Author Information
+
+Mathieu GRZYBEK

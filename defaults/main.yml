@@ -2,13 +2,13 @@ bsd_iscsi_target_config_consul: false
 bsd_iscsi_target_consul_services_path: /usr/local/etc/consul.d
 bsd_iscsi_target_consul:
 - service:
-    name: "ctld"
+    name: ctld
     tags:
-    - "iscsi"
+    - iscsi
     port: 3260
     checks:
     - args:
-      - "service"
-      - "ctld"
-      - "status"
-      interval: "60s"
+      - service
+      - ctld
+      - status
+      interval: 60s

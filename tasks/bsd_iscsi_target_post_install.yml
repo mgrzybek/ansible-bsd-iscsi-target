@@ -1,44 +1,37 @@
----
-
 - name: Post-Install | Set kernel values
   notify: set live sysctl
-  with_items: "{{ sysctl_values }}"
+  with_items: '{{ sysctl_values }}'
   sysctl:
-    name: "{{ item.name }}"
-    value: "{{ item.value }}"
+    name: '{{ item.name }}'
+    value: '{{ item.value }}'
     state: present
 
 - name: Post-Install | Create ctld configuration
   notify: restart ctld
   vars:
-    zvolumes: "{{ bsd_iscsi_target.zvolumes }}"
+    zvolumes: '{{ bsd_iscsi_target.zvolumes }}'
   template:
     src: ctl.conf.j2
     dest: /etc/ctl.conf
 
 - name: Post-Install | Create zpools
-  with_items: "{{ bsd_iscsi_target.zpools }}"
+  with_items: '{{ bsd_iscsi_target.zpools }}'
   register: zresult
   changed_when: zresult.stdout_lines | length != 2
-  shell:
-    zpool list {{ item.name }} || \
-    zpool create -m none {{ item.name }}
-    {%- for array in item.arrays %}
-      {{ array.type }} {{ array.disks | join(" ") }}
-    {%- endfor %}
+  shell: zpool list {{ item.name }} || \ zpool create -m none {{ item.name }} {%- for array in item.arrays %} {{ array.type }} {{ array.disks | join(" ") }} {%- endfor %}
 
 - name: Post-Install | Create zfs volumes
-  with_items: "{{ bsd_iscsi_target.zvolumes }}"
+  with_items: '{{ bsd_iscsi_target.zvolumes }}'
   community.general.storage.zfs.zfs:
     state: present
-    name: "{{ item.pool}}/{{ item.name }}"
+    name: '{{ item.pool}}/{{ item.name }}'
     extra_zfs_properties:
-      volsize: "{{ item.size }}"
+      volsize: '{{ item.size }}'
       compression: lz4
 
 - name: Post-Install | Consul service definition
   when:
-    - configure_consul | lower == 'true'
+  - configure_consul | lower == 'true'
   notify: reload consul
   template: src=service.consul.json.j2 dest={{ bsd_iscsi_target_consul_services_path }}/{{ item.service.name }}.json
-  with_items: "{{ bsd_iscsi_target_consul }}"
+  with_items: '{{ bsd_iscsi_target_consul }}'
